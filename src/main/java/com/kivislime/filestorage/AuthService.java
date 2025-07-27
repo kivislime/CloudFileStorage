@@ -2,7 +2,11 @@ package com.kivislime.filestorage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,22 +18,12 @@ import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
-public class UserService implements UserDetailsService {
-    private final UserRepository userRepository;
+public class AuthService  {
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    //TODO: Transactional??
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .map(user -> new org.springframework.security.core.userdetails.User(
-                        user.getUsername(),
-                        user.getPassword(),
-                        Collections.emptyList()
-                ))
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-    }
-
+    //TODO: вынести методы в AuthService нижележащие
+    // Регистрацию и аутентификацию разделяют? Но есть ли смысл для пары методов то? Как будто бы нет
     @Transactional
     public AuthResponse register(UserCredentialsDto userCredentialsDto) {
         User user = new User();
@@ -42,18 +36,5 @@ public class UserService implements UserDetailsService {
         } catch (DataIntegrityViolationException ex) {
             throw new UserAlreadyExistsException("User already exists: " + user.getUsername(), ex);
         }
-    }
-
-    @Transactional
-    public AuthResponse login(UserCredentialsDto userCredentialsDto) {
-        User user = userRepository.findByUsername(userCredentialsDto.username())
-                .orElseThrow(() -> new UsernameNotFoundException(userCredentialsDto.username()));
-
-        //TODO: заменить на свою ошибку? BadCredentialsException
-        if (!passwordEncoder.matches(userCredentialsDto.password(), user.getPassword())) {
-            throw new BadCredentialsException("Entered wrong password from user: " + user.getUsername());
-        }
-
-        return new AuthResponse(user.getUsername());
     }
 }
