@@ -1,7 +1,17 @@
 package com.kivislime.filestorage;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 
+import java.time.Duration;
+
+@Validated
 @ConfigurationProperties(prefix = "minio")
-public record MinioProperties(String url, String accessKey, String secretKey, String bucketName) {
+public record MinioProperties(String url,
+                              String externalUrl,
+                              String accessKey,
+                              String secretKey,
+                              String bucketName,
+                              String objectPathPattern,
+                              Duration presignedUrlTtl) {
 }
