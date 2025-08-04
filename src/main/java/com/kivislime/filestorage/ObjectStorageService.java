@@ -1,0 +1,93 @@
+package com.kivislime.filestorage;
+
+import io.minio.*;
+import io.minio.http.Method;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
+
+@RequiredArgsConstructor
+@Service
+public class ObjectStorageService {
+    private final MinioClient minioClient;
+    private final MinioProperties minioProperties;
+
+    public void upload(Long userId, String path, FileUploadRequest request) {
+        try {
+            minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(minioProperties.bucketName())
+                    .object(buildObjectKey(userId, path + request.ordinalName()))
+                    .stream(new ByteArrayInputStream(request.bytes()), request.size(), -1)
+                    .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot upload file " + path + request, e);
+        }
+    }
+
+    public PresignedUrlDto getPresignedUrl(Long userId, String path) {
+        try {
+            int expirySeconds = Math.toIntExact(minioProperties.presignedUrlTtl().toSeconds());
+            String url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(minioProperties.bucketName())
+                            .object(buildObjectKey(userId, path))
+                            .expiry(expirySeconds, TimeUnit.SECONDS)
+                            .build()
+            );
+            return new PresignedUrlDto(url, expirySeconds);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot create url to file: " + path, e);
+        }
+    }
+
+    //TODO: вернуть dto? с одним стримом? дичь
+    //TODO: обрезать при выдаче user-id-files?
+    public InputStream download(Long userId, String path) {
+        try {
+            return minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(minioProperties.bucketName())
+                    .object(buildObjectKey(userId, path))
+                    .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot create url to file: " + path, e);
+        }
+    }
+
+
+    public void copy(Long userId, String fromKey, String toKey) {
+        try {
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .bucket(minioProperties.bucketName())
+                            .object(buildObjectKey(userId, toKey))
+                            .source(CopySource.builder()
+                                    .bucket(minioProperties.bucketName())
+                                    .object(buildObjectKey(userId, fromKey))
+                                    .build())
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot copy file from" + fromKey + " to " + toKey, e);
+        }
+    }
+
+    public void delete(Long userId, String path) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(minioProperties.bucketName())
+                    .object(buildObjectKey(userId, path))
+                    .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot delete file " + path, e);
+        }
+    }
+
+    //TODO: может вынести в файл настроек?
+    private String buildObjectKey(Long userId, String fullPath) {
+        return String.format(minioProperties.objectPathPattern(), userId, fullPath);
+    }
+}
