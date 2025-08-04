@@ -1,18 +1,19 @@
 package com.kivislime.filestorage;
 
-import org.springframework.stereotype.Component;
-
-@Component
-//TODO: надо ли его вообще помечаьт компонентом?
 public class FileParserUtil {
-    public static String findFileName(String objectKey) {
-        int index = objectKey.lastIndexOf('/');
-        return (index == -1 || index == objectKey.length() - 1)
-                ? "" : objectKey.substring(index + 1);
+    public static String getNameFromPath(String path) {
+        int index = path.lastIndexOf('/');
+        if (index == -1) {
+            return "";
+        }
+        if (index == path.length() - 1) {
+            return path.substring(path.lastIndexOf('/', index - 1) + 1, index);
+        }
+        return path.substring(index + 1);
     }
 
-    public static String findPathToFile(String objectKey) {
+    public static String getParentPath(String objectKey) {
         int index = objectKey.lastIndexOf('/');
-        return index < 0 ? "" : objectKey.substring(0, index + 1);
+        return index == -1 ? "" : objectKey.substring(0, index + 1);
     }
 }
