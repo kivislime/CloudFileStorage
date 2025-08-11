@@ -1,8 +1,8 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kivislime.filestorage.dto.AuthResponse;
-import com.kivislime.filestorage.dto.UserCredentialsDto;
+import com.kivislime.filestorage.dto.UserCredentialsRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
@@ -46,7 +46,7 @@ public class JsonUsernamePasswordAuthenticationFilter
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
         try {
-            UserCredentialsDto creds = mapper.readValue(req.getInputStream(), UserCredentialsDto.class);
+            UserCredentialsRequest creds = mapper.readValue(req.getInputStream(), UserCredentialsRequest.class);
             validate(creds);
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(creds.username(), creds.password());
             return getAuthenticationManager().authenticate(token);
@@ -73,8 +73,8 @@ public class JsonUsernamePasswordAuthenticationFilter
     }
 
 
-    private void validate(UserCredentialsDto creds) {
-        Set<ConstraintViolation<UserCredentialsDto>> violations = validator.validate(creds);
+    private void validate(UserCredentialsRequest creds) {
+        Set<ConstraintViolation<UserCredentialsRequest>> violations = validator.validate(creds);
         if (!violations.isEmpty()) {
             String msg = violations.stream()
                     .map(v -> v.getPropertyPath() + " " + v.getMessage())

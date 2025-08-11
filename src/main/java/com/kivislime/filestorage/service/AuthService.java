@@ -1,5 +1,11 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.service;
 
+import com.kivislime.filestorage.dto.AuthResponse;
+import com.kivislime.filestorage.dto.UserCredentialsRequest;
+import com.kivislime.filestorage.entity.User;
+import com.kivislime.filestorage.exception.UserAlreadyExistsException;
+import com.kivislime.filestorage.repository.UserRepository;
+import com.kivislime.filestorage.security.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,10 +21,10 @@ public class AuthService {
     private final UserRepository userRepository;
 
     @Transactional
-    public AuthResponse register(UserCredentialsDto userCredentialsDto) {
+    public AuthResponse register(UserCredentialsRequest userCredentialsRequest) {
         User user = new User();
-        user.setUsername(userCredentialsDto.username());
-        user.setPassword(passwordEncoder.encode(userCredentialsDto.password()));
+        user.setUsername(userCredentialsRequest.username());
+        user.setPassword(passwordEncoder.encode(userCredentialsRequest.password()));
         user.setRoles(Set.of(Role.ROLE_USER));
 
         try {

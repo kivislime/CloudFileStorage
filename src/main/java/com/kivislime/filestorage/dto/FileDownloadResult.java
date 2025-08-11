@@ -1,4 +1,4 @@
-package com.kivislime.filestorage.service;
+package com.kivislime.filestorage.dto;
 
 import org.springframework.core.io.InputStreamResource;
 

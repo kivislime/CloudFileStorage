@@ -1,7 +1,7 @@
-package com.kivislime.filestorage.config;
+package com.kivislime.filestorage.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kivislime.filestorage.JsonUsernamePasswordAuthenticationFilter;
+import com.kivislime.filestorage.config.CorsConfig;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

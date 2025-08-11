@@ -1,6 +1,6 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.mapper;
 
-import com.kivislime.filestorage.dto.FileInfoDto;
+import com.kivislime.filestorage.dto.FileInfoResponse;
 import com.kivislime.filestorage.entity.UserFile;
 import com.kivislime.filestorage.util.ResourceParserUtil;
 import org.mapstruct.Mapper;
@@ -15,7 +15,7 @@ public interface FileInfoMapper {
     @Mapping(target = "name", expression = "java(ResourceParserUtil.getNameFromPath(userFile.getObjectKey()))")
     @Mapping(target = "size", source = "size")
     @Mapping(target = "type", source = "storageItemType")
-    FileInfoDto toDto(UserFile userFile);
+    FileInfoResponse toDto(UserFile userFile);
 
-    List<FileInfoDto> toDtoList(List<UserFile> userFiles);
+    List<FileInfoResponse> toDtoList(List<UserFile> userFiles);
 }

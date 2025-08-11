@@ -1,5 +1,7 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.repository;
 
+import com.kivislime.filestorage.entity.StorageItemType;
+import com.kivislime.filestorage.entity.UserFile;
 import com.kivislime.filestorage.exception.FileAlreadyExistsException;
 import com.kivislime.filestorage.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;

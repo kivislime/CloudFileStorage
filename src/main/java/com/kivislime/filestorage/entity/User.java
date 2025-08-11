@@ -1,5 +1,6 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.entity;
 
+import com.kivislime.filestorage.security.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

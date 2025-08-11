@@ -1,5 +1,6 @@
-    package com.kivislime.filestorage;
+    package com.kivislime.filestorage.config;
 
+    import com.kivislime.filestorage.infra.MinioProperties;
     import io.minio.MinioClient;
     import lombok.RequiredArgsConstructor;
     import org.springframework.context.annotation.Bean;

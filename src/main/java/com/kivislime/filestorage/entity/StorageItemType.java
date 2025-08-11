@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.entity;
 
 public enum StorageItemType {
     FILE,

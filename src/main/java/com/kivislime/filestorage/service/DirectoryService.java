@@ -1,5 +1,11 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.service;
 
+import com.kivislime.filestorage.dto.FileInfoResponse;
+import com.kivislime.filestorage.entity.StorageItemType;
+import com.kivislime.filestorage.entity.UserFile;
+import com.kivislime.filestorage.mapper.FileInfoMapper;
+import com.kivislime.filestorage.repository.FileRepository;
+import com.kivislime.filestorage.util.ResourceParserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +21,13 @@ public class DirectoryService {
     private final FileRepository fileRepository;
     private final FileInfoMapper fileInfoMapper;
 
-    public List<FileInfoDto> listDirectChildren(Long userId, String path) {
+    public List<FileInfoResponse> listDirectChildren(Long userId, String path) {
         List<UserFile> fileList = fileRepository.findDirectChildren(userId, path);
         return fileInfoMapper.toDtoList(fileList);
     }
 
     @Transactional
-    public List<FileInfoDto> createMissingDirectoriesForPath(String directoryPath, Long userId) {
+    public List<FileInfoResponse> createMissingDirectoriesForPath(String directoryPath, Long userId) {
         List<String> prefixes = ResourceParserUtil.buildPrefixes(directoryPath);
         List<UserFile> existing = fileRepository.findByUserIdAndObjectKeyInAndStorageItemType(
                 userId,

@@ -1,5 +1,8 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.controller;
 
+import com.kivislime.filestorage.dto.AuthResponse;
+import com.kivislime.filestorage.service.AuthService;
+import com.kivislime.filestorage.dto.UserCredentialsRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +19,8 @@ public class AuthController {
     private final AuthService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<AuthResponse> signUp(@Valid @RequestBody UserCredentialsDto userCredentialsDto) {
-        AuthResponse authResponse = userService.register(userCredentialsDto);
+    public ResponseEntity<AuthResponse> signUp(@Valid @RequestBody UserCredentialsRequest userCredentialsRequest) {
+        AuthResponse authResponse = userService.register(userCredentialsRequest);
         return new ResponseEntity<>(authResponse, HttpStatus.CREATED);
     }
 }

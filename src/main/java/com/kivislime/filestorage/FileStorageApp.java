@@ -2,13 +2,13 @@ package com.kivislime.filestorage;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-//TODO: добавить валидацию starter-validation? Чтобы проверять контроллеры на входе
-@SpringBootApplication
-public class FileStorageApp {
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
+@SpringBootApplication
+@ConfigurationPropertiesScan("com.kivislime.filestorage")
+public class FileStorageApp {
 	public static void main(String[] args) {
-		System.out.println("Hello Dikii");
 		SpringApplication.run(FileStorageApp.class, args);
 	}
-
 }

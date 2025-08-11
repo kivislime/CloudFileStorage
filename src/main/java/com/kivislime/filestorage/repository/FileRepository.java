@@ -1,5 +1,7 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.repository;
 
+import com.kivislime.filestorage.entity.StorageItemType;
+import com.kivislime.filestorage.entity.UserFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

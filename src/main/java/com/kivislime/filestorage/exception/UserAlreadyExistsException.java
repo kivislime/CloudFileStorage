@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String message) {

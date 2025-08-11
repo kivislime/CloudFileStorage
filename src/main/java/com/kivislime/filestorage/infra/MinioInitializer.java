@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.infra;
 
 import com.kivislime.filestorage.exception.MinioInitializerException;
 import io.minio.BucketExistsArgs;

@@ -1,5 +1,9 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.controller;
 
+import com.kivislime.filestorage.service.DirectoryService;
+import com.kivislime.filestorage.dto.FileInfoResponse;
+import com.kivislime.filestorage.security.UserPrincipal;
+import com.kivislime.filestorage.validation.ValidDirectoryPath;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,16 +19,16 @@ public class DirectoryController {
     private final DirectoryService directoryService;
 
     @GetMapping
-    public ResponseEntity<List<FileInfoDto>> getDirectory(@RequestParam @ValidDirectoryPath String path,
-                                                          @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<FileInfoDto> fileList = directoryService.listDirectChildren(userPrincipal.getId(), path);
+    public ResponseEntity<List<FileInfoResponse>> getDirectory(@RequestParam @ValidDirectoryPath String path,
+                                                               @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<FileInfoResponse> fileList = directoryService.listDirectChildren(userPrincipal.getId(), path);
         return new ResponseEntity<>(fileList, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<List<FileInfoDto>> createDirectory(@RequestParam @ValidDirectoryPath String path,
-                                                             @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<FileInfoDto> fileList = directoryService.createMissingDirectoriesForPath(path, userPrincipal.getId());
+    public ResponseEntity<List<FileInfoResponse>> createDirectory(@RequestParam @ValidDirectoryPath String path,
+                                                                  @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<FileInfoResponse> fileList = directoryService.createMissingDirectoriesForPath(path, userPrincipal.getId());
         return new ResponseEntity<>(fileList, HttpStatus.CREATED);
     }
 }

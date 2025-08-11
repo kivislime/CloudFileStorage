@@ -1,5 +1,10 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.service;
 
+import com.kivislime.filestorage.dto.FileUploadCommand;
+import com.kivislime.filestorage.infra.MinioProperties;
+import com.kivislime.filestorage.dto.PresignedUrlResponse;
+import com.kivislime.filestorage.exception.ObjectStorageException;
+import com.kivislime.filestorage.infra.validators.FileExtensionValidator;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +20,7 @@ public class ObjectStorageService {
     private final MinioProperties minioProperties;
     private final FileExtensionValidator fileExtensionValidator;
 
-    public void upload(Long userId, String path, FileUploadRequest request) {
+    public void upload(Long userId, String path, FileUploadCommand request) {
         fileExtensionValidator.validateExtension(path);
         fileExtensionValidator.validateMimeType(request.inputStream());
 
@@ -30,7 +35,7 @@ public class ObjectStorageService {
         }
     }
 
-    public PresignedUrlDto getPresignedUrl(Long userId, String path) {
+    public PresignedUrlResponse getPresignedUrl(Long userId, String path) {
         try {
             int expirySeconds = Math.toIntExact(minioProperties.presignedUrlTtl().toSeconds());
             String url = minioClient.getPresignedObjectUrl(
@@ -41,7 +46,7 @@ public class ObjectStorageService {
                             .expiry(expirySeconds, TimeUnit.SECONDS)
                             .build()
             );
-            return new PresignedUrlDto(url, expirySeconds);
+            return new PresignedUrlResponse(url, expirySeconds);
         } catch (Exception e) {
             throw new ObjectStorageException("Cannot create url to file: " + path, e);
         }

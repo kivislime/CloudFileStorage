@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.util;
 
 import com.kivislime.filestorage.entity.UserFile;
 import com.kivislime.filestorage.exception.ZipCreateArchiveHierarchyException;

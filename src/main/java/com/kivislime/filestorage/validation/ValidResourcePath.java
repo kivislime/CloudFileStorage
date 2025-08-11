@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

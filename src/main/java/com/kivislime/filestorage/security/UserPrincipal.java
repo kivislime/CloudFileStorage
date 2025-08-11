@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.security;
 
 import com.kivislime.filestorage.entity.User;
 import lombok.Getter;

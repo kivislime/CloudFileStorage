@@ -1,5 +1,6 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.controller;
 
+import com.kivislime.filestorage.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
