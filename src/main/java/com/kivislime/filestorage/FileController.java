@@ -20,40 +20,34 @@ public class FileController {
     private final FileService fileService;
 
     @GetMapping
-    public ResponseEntity<FileInfoDto> getFileInfo(@RequestParam String path,
-                                                   @AuthenticationPrincipal UserPrincipal principal) {
-        FileInfoDto file = fileService.getFileInfo(principal.getId(), path);
+    public ResponseEntity<FileInfoDto> resourceInfo(@RequestParam @ValidResourcePath String path,
+                                                    @AuthenticationPrincipal UserPrincipal principal) {
+        FileInfoDto file = fileService.getResourceInfo(principal.getId(), path);
         return new ResponseEntity<>(file, HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<FileInfoDto>> searchFiles(@RequestParam String path,
+    public ResponseEntity<List<FileInfoDto>> searchFiles(@RequestParam @ValidDirectoryPath String path,
                                                          @AuthenticationPrincipal UserPrincipal principal) {
-        List<FileInfoDto> fileList = fileService.getFileList(principal.getId(), path);
+        List<FileInfoDto> fileList = fileService.listResourcesRecursive(principal.getId(), path);
         return new ResponseEntity<>(fileList, HttpStatus.OK);
     }
 
     @GetMapping("/move")
-    public ResponseEntity<FileInfoDto> moveFile(@RequestParam String fromKey,
-                                                @RequestParam String toKey,
+    public ResponseEntity<FileInfoDto> moveFile(@RequestParam @ValidResourcePath String fromKey,
+                                                @RequestParam @ValidResourcePath String toKey,
                                                 @AuthenticationPrincipal UserPrincipal principal) {
-        FileInfoDto fileList;
-        if (FileParserUtil.getNameFromPath(fromKey).equals(FileParserUtil.getNameFromPath(toKey))) {
-            fileList = fileService.moveFile(principal.getId(), fromKey, toKey);
-        } else {
-            fileList = fileService.renameFile(principal.getId(), fromKey, toKey);
-        }
-
+        FileInfoDto fileList = fileService.moveResource(principal.getId(), fromKey, toKey);
         return new ResponseEntity<>(fileList, HttpStatus.OK);
     }
 
     @GetMapping("download")
-    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam String path,
+    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam @ValidResourcePath String path,
                                                             @AuthenticationPrincipal UserPrincipal principal) {
         //TODO: вернуться к этой идее после того как подниму фронтенд
         // PresignedUrlDto url = fileService.downloadFileByUrl(principal.getId(), path);
         // return new ResponseEntity<>(url, HttpStatus.OK);
-        FileDownloadDto file = fileService.download(principal.getId(), path);
+        FileDownloadDto file = fileService.downloadResource(principal.getId(), path);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"archive.zip\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -66,22 +60,22 @@ public class FileController {
     // везде пишу AuthenticationPrincipal? Облегчить?
     //TODO: почему работает без указания в скобках параметра? RequestParam
     @PostMapping
-    public ResponseEntity<List<FileInfoDto>> uploadFile(@RequestParam String path,
+    public ResponseEntity<List<FileInfoDto>> uploadFile(@RequestParam @ValidDirectoryPath String path,
                                                         @RequestParam MultipartFile file,
                                                         @AuthenticationPrincipal UserPrincipal principal) throws IOException {
         FileUploadRequest fileUploadRequest = new FileUploadRequest(
                 file.getOriginalFilename(),
                 file.getContentType(),
                 file.getSize(),
-                file.getBytes()); //TODO: маппер?
-        List<FileInfoDto> fileInfoDtoList = fileService.uploadFile(principal.getId(), path, fileUploadRequest);
+                file.getInputStream()); //TODO: маппер?
+        List<FileInfoDto> fileInfoDtoList = fileService.uploadResource(principal.getId(), path, fileUploadRequest);
         return new ResponseEntity<>(fileInfoDtoList, HttpStatus.CREATED);
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteFile(@RequestParam String path,
+    public ResponseEntity<Void> deleteFile(@RequestParam @ValidResourcePath String path,
                                            @AuthenticationPrincipal UserPrincipal principal) {
-        fileService.deleteFile(principal.getId(), path);
+        fileService.deleteResource(principal.getId(), path);
         return ResponseEntity.noContent().build();
     }
 

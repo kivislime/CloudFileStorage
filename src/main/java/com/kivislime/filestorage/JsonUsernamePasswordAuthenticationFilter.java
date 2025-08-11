@@ -3,63 +3,81 @@ package com.kivislime.filestorage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JsonUsernamePasswordAuthenticationFilter
         extends AbstractAuthenticationProcessingFilter {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper mapper;
+    private final Validator validator;
 
-    public JsonUsernamePasswordAuthenticationFilter(AuthenticationManager authManager) {
+    public JsonUsernamePasswordAuthenticationFilter(AuthenticationManager authManager, Validator validator, ObjectMapper mapper) {
         super(PathPatternRequestMatcher
                 .withDefaults()
                 .matcher(HttpMethod.POST, "/auth/sign-in")
         );
-
+        this.mapper = mapper;
+        this.validator = validator;
         setAuthenticationManager(authManager);
+        setAuthenticationSuccessHandler(successHandler());
+        setAuthenticationFailureHandler(failureHandler());
+    }
 
-        setAuthenticationSuccessHandler((req, res, auth) -> {
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            req.getSession(true);
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) {
+        try {
+            UserCredentialsDto creds = mapper.readValue(req.getInputStream(), UserCredentialsDto.class);
+            validate(creds);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(creds.username(), creds.password());
+            return getAuthenticationManager().authenticate(token);
+        } catch (IOException e) {
+            throw new BadCredentialsException("Invalid authentication request", e);
+        }
+    }
 
-            new HttpSessionSecurityContextRepository()
-                    .saveContext(SecurityContextHolder.getContext(), req, res);
 
+    private AuthenticationSuccessHandler successHandler() {
+        return (req, res, auth) -> {
             res.setStatus(HttpStatus.OK.value());
             res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            res.getWriter().write(mapper.writeValueAsString(new AuthResponse(auth.getName())));
+        };
+    }
 
-            AuthResponse body = new AuthResponse(auth.getName());
-            res.getWriter().write(objectMapper.writeValueAsString(body));
-        });
-
-        setAuthenticationFailureHandler((req, res, ex) -> {
+    private AuthenticationFailureHandler failureHandler() {
+        return (req, res, ex) -> {
             res.setStatus(HttpStatus.UNAUTHORIZED.value());
             res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            res.getWriter().write(
-                    objectMapper.writeValueAsString(Map.of("error", ex.getMessage()))
-            );
-        });
-    }
-//TODO: работает только формат передачи в x-www-form-urlencoded, в json все падает
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest req,
-                                                HttpServletResponse res) {
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(username, password);
-        return this.getAuthenticationManager().authenticate(token);
+            res.getWriter().write(mapper.writeValueAsString(Map.of("error", ex.getMessage())));
+        };
     }
 
+
+    private void validate(UserCredentialsDto creds) {
+        Set<ConstraintViolation<UserCredentialsDto>> violations = validator.validate(creds);
+        if (!violations.isEmpty()) {
+            String msg = violations.stream()
+                    .map(v -> v.getPropertyPath() + " " + v.getMessage())
+                    .collect(Collectors.joining(", "));
+            throw new AuthenticationServiceException("Validation failed: " + msg);
+        }
+    }
 }
