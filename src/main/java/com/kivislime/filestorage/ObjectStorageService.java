@@ -5,7 +5,6 @@ import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
@@ -14,13 +13,17 @@ import java.util.concurrent.TimeUnit;
 public class ObjectStorageService {
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
+    private final FileExtensionValidator fileExtensionValidator;
 
     public void upload(Long userId, String path, FileUploadRequest request) {
+        fileExtensionValidator.validateExtension(path);
+        fileExtensionValidator.validateMimeType(request.inputStream());
+
         try {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(minioProperties.bucketName())
                     .object(buildObjectKey(userId, path + request.ordinalName()))
-                    .stream(new ByteArrayInputStream(request.bytes()), request.size(), -1)
+                    .stream(request.inputStream(), request.size(), -1)
                     .build());
         } catch (Exception e) {
             throw new RuntimeException("Cannot upload file " + path + request, e);
@@ -44,8 +47,6 @@ public class ObjectStorageService {
         }
     }
 
-    //TODO: вернуть dto? с одним стримом? дичь
-    //TODO: обрезать при выдаче user-id-files?
     public InputStream download(Long userId, String path) {
         try {
             return minioClient.getObject(GetObjectArgs.builder()
@@ -56,7 +57,6 @@ public class ObjectStorageService {
             throw new RuntimeException("Cannot create url to file: " + path, e);
         }
     }
-
 
     public void copy(Long userId, String fromKey, String toKey) {
         try {
@@ -86,7 +86,6 @@ public class ObjectStorageService {
         }
     }
 
-    //TODO: может вынести в файл настроек?
     private String buildObjectKey(Long userId, String fullPath) {
         return String.format(minioProperties.objectPathPattern(), userId, fullPath);
     }

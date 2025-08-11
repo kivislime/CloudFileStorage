@@ -1,20 +1,17 @@
 package com.kivislime.filestorage;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-
 @RequiredArgsConstructor
 @Service
-public class AppUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
-    //TODO: Transactional?? Заменить при появлении ролей   List.of()
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
@@ -22,7 +19,10 @@ public class AppUserDetailsService implements UserDetailsService {
                         user.getId(),
                         user.getUsername(),
                         user.getPassword(),
-                        List.of()
+                        user.getRoles()
+                                .stream()
+                                .map(role -> new SimpleGrantedAuthority(role.name()))
+                                .toList()
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }

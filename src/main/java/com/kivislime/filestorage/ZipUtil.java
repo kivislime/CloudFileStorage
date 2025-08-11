@@ -1,18 +1,15 @@
 package com.kivislime.filestorage;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipUtils {
-    private ZipUtils() {
+public class ZipUtil {
+    private ZipUtil() {
     }
 
     public static ZipResult createArchiveHierarchy(Map<String, InputStream> downloadedFileStreams,

@@ -1,22 +1,21 @@
-package com.kivislime.filestorage;
+    package com.kivislime.filestorage;
 
-import io.minio.MinioClient;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+    import io.minio.MinioClient;
+    import lombok.RequiredArgsConstructor;
+    import org.springframework.boot.context.properties.EnableConfigurationProperties;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
 
-@RequiredArgsConstructor
-@Configuration
-@EnableConfigurationProperties({MinioProperties.class})
-public class MinioConfiguration {
-    private final MinioProperties properties;
+    @RequiredArgsConstructor
+    @Configuration
+    public class MinioConfiguration {
+        private final MinioProperties properties;
 
-    @Bean
-    public MinioClient minioClient() {
-        return MinioClient.builder()
-                .endpoint(properties.url())
-                .credentials(properties.accessKey(), properties.secretKey())
-                .build();
+        @Bean
+        public MinioClient minioClient() {
+            return MinioClient.builder()
+                    .endpoint(properties.url())
+                    .credentials(properties.accessKey(), properties.secretKey())
+                    .build();
+        }
     }
-}
