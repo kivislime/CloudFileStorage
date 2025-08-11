@@ -1,5 +1,8 @@
 package com.kivislime.filestorage;
 
+import com.kivislime.filestorage.dto.FileInfoDto;
+import com.kivislime.filestorage.entity.UserFile;
+import com.kivislime.filestorage.util.ResourceParserUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

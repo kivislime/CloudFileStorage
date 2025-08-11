@@ -1,5 +1,6 @@
 package com.kivislime.filestorage;
 
+import com.kivislime.filestorage.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

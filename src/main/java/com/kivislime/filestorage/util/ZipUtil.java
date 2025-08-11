@@ -1,5 +1,8 @@
 package com.kivislime.filestorage;
 
+import com.kivislime.filestorage.entity.UserFile;
+import com.kivislime.filestorage.exception.ZipCreateArchiveHierarchyException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +31,7 @@ public class ZipUtil {
             byte[] bytes = baos.toByteArray();
             return new ZipResult(bytes, bytes.length);
         } catch (Exception e) {
-            throw new RuntimeException("Cannot create archive hierarchy", e);
+            throw new ZipCreateArchiveHierarchyException("Cannot create archive hierarchy IO", e);
         }
     }
 

@@ -21,8 +21,8 @@ public class UserFile {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
-    //TODO: УНИКАЛЬНОСТЬ?????
-    @Column(name = "object_key",  unique = true, nullable = false)
+
+    @Column(name = "object_key", unique = true, nullable = false)
     private String objectKey;
 
     @Column(name = "size", nullable = false)

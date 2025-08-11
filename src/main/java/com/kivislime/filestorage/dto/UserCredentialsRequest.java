@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

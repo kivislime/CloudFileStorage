@@ -56,20 +56,23 @@ public class FileController {
     }
 
     //TODO: какой будет exception при файлу размером больше 10 кб? чек
-    //  throws IOException? Оставить?
     // везде пишу AuthenticationPrincipal? Облегчить?
     //TODO: почему работает без указания в скобках параметра? RequestParam
     @PostMapping
     public ResponseEntity<List<FileInfoDto>> uploadFile(@RequestParam @ValidDirectoryPath String path,
                                                         @RequestParam MultipartFile file,
-                                                        @AuthenticationPrincipal UserPrincipal principal) throws IOException {
-        FileUploadRequest fileUploadRequest = new FileUploadRequest(
-                file.getOriginalFilename(),
-                file.getContentType(),
-                file.getSize(),
-                file.getInputStream()); //TODO: маппер?
-        List<FileInfoDto> fileInfoDtoList = fileService.uploadResource(principal.getId(), path, fileUploadRequest);
-        return new ResponseEntity<>(fileInfoDtoList, HttpStatus.CREATED);
+                                                        @AuthenticationPrincipal UserPrincipal principal) {
+        try {
+            FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getSize(),
+                    file.getInputStream());
+            List<FileInfoDto> fileInfoDtoList = fileService.uploadResource(principal.getId(), path, fileUploadRequest);
+            return new ResponseEntity<>(fileInfoDtoList, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping

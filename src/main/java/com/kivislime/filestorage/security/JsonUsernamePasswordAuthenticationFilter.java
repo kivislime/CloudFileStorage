@@ -1,6 +1,8 @@
 package com.kivislime.filestorage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kivislime.filestorage.dto.AuthResponse;
+import com.kivislime.filestorage.dto.UserCredentialsDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;

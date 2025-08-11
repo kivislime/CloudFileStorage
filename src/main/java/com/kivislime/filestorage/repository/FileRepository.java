@@ -1,12 +1,12 @@
 package com.kivislime.filestorage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-//TODO: enableJpaRepositories in config?
 @Repository
 public interface FileRepository extends JpaRepository<UserFile, Long> {
     Optional<UserFile> findByUserIdAndObjectKey(Long userId, String path);
@@ -15,9 +15,21 @@ public interface FileRepository extends JpaRepository<UserFile, Long> {
 
     List<UserFile> findByUserIdAndObjectKeyInAndStorageItemType(Long userId, List<String> path, StorageItemType storageItemType);
 
-//    @Modifying
-//    @Query("UPDATE UserFile uf SET uf.objectKey = :newPath WHERE uf.id = :id")
-//    int updatePathById(@Param("id") Long id, @Param("newPath") String newPath);
+    @Query("""
+             SELECT uf
+               FROM UserFile uf
+              WHERE uf.userId = :userId
+                AND (
+                  (uf.objectKey LIKE CONCAT(:path, '%')
+                   AND uf.objectKey NOT LIKE CONCAT(:path, '%', '/', '%')
+                  )
+                  OR
+                  (uf.objectKey LIKE CONCAT(:path, '%/')
+                   AND uf.objectKey NOT LIKE CONCAT(:path, '%/%', '/', '%')
+                  )
+                )
+            """)
+    List<UserFile> findDirectChildren(Long userId, String path);
 
     void deleteByUserIdAndObjectKey(Long userId, String path);
 }

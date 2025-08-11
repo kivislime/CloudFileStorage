@@ -1,5 +1,7 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.service;
 
+import com.kivislime.filestorage.UserPrincipal;
+import com.kivislime.filestorage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

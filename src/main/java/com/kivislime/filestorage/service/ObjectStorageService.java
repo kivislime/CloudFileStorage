@@ -26,7 +26,7 @@ public class ObjectStorageService {
                     .stream(request.inputStream(), request.size(), -1)
                     .build());
         } catch (Exception e) {
-            throw new RuntimeException("Cannot upload file " + path + request, e);
+            throw new ObjectStorageException("Cannot upload file " + path + request, e);
         }
     }
 
@@ -43,7 +43,7 @@ public class ObjectStorageService {
             );
             return new PresignedUrlDto(url, expirySeconds);
         } catch (Exception e) {
-            throw new RuntimeException("Cannot create url to file: " + path, e);
+            throw new ObjectStorageException("Cannot create url to file: " + path, e);
         }
     }
 
@@ -54,7 +54,7 @@ public class ObjectStorageService {
                     .object(buildObjectKey(userId, path))
                     .build());
         } catch (Exception e) {
-            throw new RuntimeException("Cannot create url to file: " + path, e);
+            throw new ObjectStorageException("Cannot download file: " + path, e);
         }
     }
 
@@ -71,7 +71,7 @@ public class ObjectStorageService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Cannot copy file from" + fromKey + " to " + toKey, e);
+            throw new ObjectStorageException("Cannot copy file from" + fromKey + " to " + toKey, e);
         }
     }
 
@@ -82,7 +82,7 @@ public class ObjectStorageService {
                     .object(buildObjectKey(userId, path))
                     .build());
         } catch (Exception e) {
-            throw new RuntimeException("Cannot delete file " + path, e);
+            throw new ObjectStorageException("Cannot delete file " + path, e);
         }
     }
 

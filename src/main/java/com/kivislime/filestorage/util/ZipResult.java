@@ -1,4 +1,4 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.dto;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

@@ -5,5 +5,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Set;
 
 @ConfigurationProperties("file")
-public record ObjectStorageProperties(Set<String> allowedExtensions, Set<String> allowedMimeTypes) {
+public record ObjectStorageProperties(Set<String> allowedExtensions, Set<String> allowedMime) {
 }

@@ -1,9 +1,11 @@
-package com.kivislime.filestorage;
+package com.kivislime.filestorage.infra;
 
+import com.kivislime.filestorage.exception.DetectMimeTypeException;
+import com.kivislime.filestorage.exception.InvalidFileExtensionException;
+import com.kivislime.filestorage.exception.InvalidMimeTypeException;
+import com.kivislime.filestorage.util.ResourceParserUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +20,7 @@ public class FileExtensionValidator {
         String ext = ResourceParserUtil.getExtension(filename);
         if (!objectStorageProperties.allowedExtensions()
                 .contains(ext)) {
-            throw new RuntimeException(ext);
+            throw new InvalidFileExtensionException("filename: " + ext);
         }
     }
 
@@ -28,12 +30,12 @@ public class FileExtensionValidator {
             String mime = detectMimeType(inputStream);
             inputStream.reset();
 
-            if (!objectStorageProperties.allowedMimeTypes()
+            if (!objectStorageProperties.allowedMime()
                     .contains(mime)) {
-                throw new RuntimeException("MIME type " + mime + " is not allowed");
+                throw new InvalidMimeTypeException("MIME type " + mime + " is not allowed");
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new DetectMimeTypeException("Cannot detect mime type" + e);
         }
     }
 

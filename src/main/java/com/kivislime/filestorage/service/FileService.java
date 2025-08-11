@@ -64,7 +64,7 @@ public class FileService {
     public FileDownloadDto downloadResource(Long userId, String path) {
         List<UserFile> userFiles = fileRepository.findByUserIdAndObjectKeyStartingWith(userId, path);
         if (userFiles.isEmpty()) {
-            throw new RuntimeException("User files with id: " + userId + " not found");
+            throw new FileNotFoundException("User files with id: " + userId + " not found");
         }
 
         Map<String, InputStream> downloadedFileStreams = new HashMap<>();
