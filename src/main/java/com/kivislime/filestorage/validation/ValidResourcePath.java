@@ -20,10 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = {})
 @NotBlank
 @Size(min = 1, max = 255)
-@Pattern(
-        regexp = "^(?:[A-Za-z0-9_.\\-]+(?:/[A-Za-z0-9_.\\-]+)*|[A-Za-z0-9_.\\-]+(?:/[A-Za-z0-9_.\\-]+)*/)$",
-        message = "Invalid file or directory path"
-)
+@Pattern(regexp = PathPatterns.RESOURCE, message = "Invalid resource path")
 public @interface ValidResourcePath {
     String message() default "Invalid path";
     Class<?>[] groups() default {};

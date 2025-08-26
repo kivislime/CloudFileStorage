@@ -7,15 +7,24 @@ public class ResourceParserUtil {
     public static String getNameFromPath(String path) {
         int index = path.lastIndexOf('/');
         if (index == -1) {
-            return "";
+            return path;
         }
         if (index == path.length() - 1) {
-            return path.substring(path.lastIndexOf('/', index - 1) + 1, index);
+            return path.substring(path.lastIndexOf('/', index - 1) + 1);
         }
         return path.substring(index + 1);
     }
 
     //Using in mapper
+    public static String getParentPathExcludeRootPath(String objectKey) {
+        int index = objectKey.lastIndexOf('/');
+
+        if (index == objectKey.indexOf('/')) {
+            return "";
+        }
+        return index == -1 ? "" : objectKey.substring(0, index + 1);
+    }
+
     public static String getParentPath(String objectKey) {
         int index = objectKey.lastIndexOf('/');
         return index == -1 ? "" : objectKey.substring(0, index + 1);
@@ -26,8 +35,10 @@ public class ResourceParserUtil {
         return index == -1 ? "" : path.substring(index + 1);
     }
 
-
     public static List<String> buildPrefixes(String path) {
+        if (path.isEmpty()) {
+            return List.of();
+        }
         String[] parts = path.split("/");
         List<String> prefixes = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -37,4 +48,13 @@ public class ResourceParserUtil {
         }
         return prefixes;
     }
+
+    public static boolean isDirectory(String path) {
+        return path.endsWith("/");
+    }
+
+    public static boolean isFile(String path) {
+        return path.endsWith(".");
+    }
+
 }

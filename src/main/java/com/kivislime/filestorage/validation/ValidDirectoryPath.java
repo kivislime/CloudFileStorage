@@ -18,12 +18,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Documented
 @Constraint(validatedBy = {})
-@NotBlank
-@Size(min = 1, max = 255)
-@Pattern(
-        regexp = "^[A-Za-z0-9_\\-]+(?:/[A-Za-z0-9_\\-]+)*/$",
-        message = "Invalid directory path"
-)
+@Size(max = 255)
+@Pattern(regexp = PathPatterns.DIRECTORY_PARAM, message = "Invalid directory path")
 public @interface ValidDirectoryPath {
     String message() default "Invalid directory path";
     Class<?>[] groups() default {};

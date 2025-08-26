@@ -21,27 +21,7 @@ public class FileExtensionValidator {
         String ext = ResourceParserUtil.getExtension(filename);
         if (!objectStorageProperties.allowedExtensions()
                 .contains(ext)) {
-            throw new InvalidFileExtensionException("filename: " + ext);
+            throw new InvalidFileExtensionException("Invalid file extension: " + ext + ", for path: " + filename);
         }
     }
-
-    public void validateMimeType(InputStream inputStream) {
-        try {
-            inputStream.mark(512);
-            String mime = detectMimeType(inputStream);
-            inputStream.reset();
-
-            if (!objectStorageProperties.allowedMime()
-                    .contains(mime)) {
-                throw new InvalidMimeTypeException("MIME type " + mime + " is not allowed");
-            }
-        } catch (IOException e) {
-            throw new DetectMimeTypeException("Cannot detect mime type" + e);
-        }
-    }
-
-    private String detectMimeType(InputStream is) throws IOException {
-        return URLConnection.guessContentTypeFromStream(is);
-    }
-
 }
