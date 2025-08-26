@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kivislime.filestorage.config.CorsConfig;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,9 +19,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.util.Map;
+
+@Slf4j
 @RequiredArgsConstructor
 @Configuration
-//TODO: @EnableMethodSecurity(prePostEnabled = true) // вкл, когда введу контроллеры админа
 @EnableWebSecurity
 public class SecurityConfiguration {
     private final CorsConfig corsConfig;
@@ -41,8 +45,21 @@ public class SecurityConfiguration {
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessHandler((req, res, auth) -> {
-                            res.setStatus(HttpStatus.NO_CONTENT.value());
+                            boolean isAnonymous = (auth == null)
+                                    || !auth.isAuthenticated()
+                                    || auth instanceof AnonymousAuthenticationToken
+                                    || "anonymousUser".equals(auth.getPrincipal());
+
                             res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            if (isAnonymous) {
+                                res.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                var body = Map.of("message", "Not logged in");
+                                mapper.writeValue(res.getWriter(), body);
+                                res.getWriter().flush();
+                            } else {
+                                log.info("User with username: {}, is logged out", auth.getName());
+                                res.setStatus(HttpStatus.NO_CONTENT.value());
+                            }
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
