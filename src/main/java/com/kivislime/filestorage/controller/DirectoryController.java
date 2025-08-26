@@ -22,13 +22,14 @@ public class DirectoryController {
     public ResponseEntity<List<FileInfoResponse>> getDirectory(@RequestParam @ValidDirectoryPath String path,
                                                                @AuthenticationPrincipal UserPrincipal userPrincipal) {
         List<FileInfoResponse> fileList = directoryService.listDirectChildren(userPrincipal.getId(), path);
-        return new ResponseEntity<>(fileList, HttpStatus.OK);
+        return ResponseEntity.ok(fileList);
     }
 
     @PostMapping
     public ResponseEntity<List<FileInfoResponse>> createDirectory(@RequestParam @ValidDirectoryPath String path,
                                                                   @AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<FileInfoResponse> fileList = directoryService.createMissingDirectoriesForPath(path, userPrincipal.getId());
-        return new ResponseEntity<>(fileList, HttpStatus.CREATED);
+        List<FileInfoResponse> fileList = directoryService.createDirectoryStrict(userPrincipal.getId(), path);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(fileList);
     }
 }
