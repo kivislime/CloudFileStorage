@@ -11,9 +11,9 @@ import java.util.List;
 @Mapper(componentModel = "spring",
         imports = {ResourceParserUtil.class})
 public interface FileInfoMapper {
-    @Mapping(target = "path", expression = "java(ResourceParserUtil.getParentPath(userFile.getObjectKey()))")
+    @Mapping(target = "path", expression = "java(ResourceParserUtil.getParentPathExcludeRootPath(userFile.getObjectKey()))")
     @Mapping(target = "name", expression = "java(ResourceParserUtil.getNameFromPath(userFile.getObjectKey()))")
-    @Mapping(target = "size", source = "size")
+    @Mapping(target = "size", expression = "java(userFile.getStorageItemType() == StorageItemType.DIRECTORY ? null : userFile.getSize())")
     @Mapping(target = "type", source = "storageItemType")
     FileInfoResponse toDto(UserFile userFile);
 

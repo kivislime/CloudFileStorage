@@ -3,6 +3,15 @@ package com.kivislime.filestorage.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record UserCredentialsRequest(@NotBlank @Size(min = 2, max = 16) String username,
-                                     @NotBlank @Size(min = 2, max = 32) String password) {
+public record UserCredentialsRequest(
+                                     @Size(
+                                             min = 3,
+                                             max = 20,
+                                             message = "The login must contain from {min} to {max} characters")
+                                     String username,
+                                     @Size(
+                                             min = 3,
+                                             max = 20,
+                                             message = "The password must contain from {min} to {max} characters")
+                                     String password) {
 }

@@ -6,14 +6,15 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
-//TODO: избавиться от висячих ссылок? ввести  ON DELETE CASCADE;
-// default FILE?
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_files")
+@Table(name = "user_files", uniqueConstraints = {
+        @UniqueConstraint(
+                columnNames = {"user_id", "object_key"}
+        )})
 public class UserFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class UserFile {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "object_key", unique = true, nullable = false)
+    @Column(name = "object_key", nullable = false)
     private String objectKey;
 
     @Column(name = "size", nullable = false)
@@ -35,5 +36,4 @@ public class UserFile {
     @CreationTimestamp
     @Column(name = "uploaded_at", nullable = false)
     private Instant uploadedAt;
-
 }
