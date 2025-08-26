@@ -26,9 +26,10 @@ CREATE TABLE users
 ALTER TABLE users
     ADD CONSTRAINT uc_users_username UNIQUE (username);
 
+ALTER TABLE user_files
+    ADD CONSTRAINT uc_user_files_user_id_object_key UNIQUE (user_id, object_key);
+
 ALTER TABLE user_roles
     ADD CONSTRAINT fk_user_roles_on_user FOREIGN KEY (user_id) REFERENCES users (id);
 
-ALTER TABLE user_files
-    ADD CONSTRAINT uc_user_files_object_key UNIQUE (object_key);
 
