@@ -74,7 +74,7 @@ public class FileService {
         }
 
         if (ResourceParserUtil.isDirectory(fromKey) && ResourceParserUtil.isDirectory(toKey)) {
-            log.info("User tried to move resource from " + fromKey + "to " + toKey + ", userId=" + userId);
+            log.info("User tried to move resource from " + fromKey + " to " + toKey + ", userId=" + userId);
             return move(userId, fromKey, toKey);
         } else if (ResourceParserUtil.getNameFromPath(fromKey).equals(ResourceParserUtil.getNameFromPath(toKey))) {
             log.info("User tried to rename resource from " + fromKey + "to " + toKey + ", userId=" + userId);
@@ -167,31 +167,26 @@ public class FileService {
             }
             file.setObjectKey(newPath);
         }
+        tryCopyFiles(userId, pairOldNewPath);
         fileRepository.saveAll(files);
-        tryUpdateFiles(userId, pairOldNewPath);
+        tryDeleteFiles(userId, pairOldNewPath);
 
         return fileInfoMapper.toDtoList(files);
     }
 
-    private List<FileInfoResponse> rename(Long userId, String fromKey, String toKey) {
-        UserFile file = fileRepository.updateFile(userId, fromKey, toKey);
-
-        if (file.getStorageItemType() == StorageItemType.FILE) {
-            tryUpdateFiles(userId, Map.of(fromKey, toKey));
-        }
-
-        List<FileInfoResponse> list = directoryService.createMissingDirectoriesForPath(toKey, userId);
-        list.add(fileInfoMapper.toDto(file));
-        return list;
-    }
-
-    private void tryUpdateFiles(Long userId, Map<String, String> pairOldNewPath) {
+    private void tryCopyFiles(Long userId, Map<String, String> pairOldNewPath) {
         for (Map.Entry<String, String> pair : pairOldNewPath.entrySet()) {
             try {
                 objectStorageService.copy(userId, pair.getKey(), pair.getValue());
             } catch (ObjectStorageException copyEx) {
                 log.error("Copy failed in update operation: {}", copyEx.getMessage());
+                throw copyEx;
             }
+        }
+    }
+
+    private void tryDeleteFiles(Long userId, Map<String, String> pairOldNewPath) {
+        for (Map.Entry<String, String> pair : pairOldNewPath.entrySet()) {
             try {
                 objectStorageService.delete(userId, pair.getKey());
             } catch (ObjectStorageException delEx) {
@@ -200,4 +195,18 @@ public class FileService {
             }
         }
     }
+
+    private List<FileInfoResponse> rename(Long userId, String fromKey, String toKey) {
+        UserFile file = fileRepository.updateFile(userId, fromKey, toKey);
+
+        if (file.getStorageItemType() == StorageItemType.FILE) {
+            tryCopyFiles(userId, Map.of(fromKey, toKey));
+            tryDeleteFiles(userId, Map.of(fromKey, toKey));
+        }
+
+        List<FileInfoResponse> list = directoryService.createMissingDirectoriesForPath(toKey, userId);
+        list.add(fileInfoMapper.toDto(file));
+        return list;
+    }
+
 }
