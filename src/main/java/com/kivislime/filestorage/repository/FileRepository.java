@@ -43,5 +43,4 @@ public interface FileRepository extends JpaRepository<UserFile, Long> {
 
     boolean existsByUserIdAndObjectKeyAndStorageItemType(Long userId, String path, StorageItemType storageItemType);
 
-    List<UserFile> findByUserIdAndStorageItemTypeAndObjectKeyStartingWith(Long userId, StorageItemType type, String fromKey);
 }
