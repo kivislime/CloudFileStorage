@@ -69,7 +69,6 @@ public class FileRepositoryFacade {
         }
     }
 
-
     @Transactional
     public void deleteFile(UserFile userFile) {
         fileRepository.delete(userFile);
@@ -82,14 +81,6 @@ public class FileRepositoryFacade {
 
     public List<UserFile> findAllByUserIdAndObjectKeyIn(Long userId, List<String> objectKey) {
         return fileRepository.findAllByUserIdAndObjectKeyIn(userId, objectKey);
-    }
-
-    public List<UserFile> findByUserIdAndStorageItemTypeAndObjectKeyStartingWith(Long userId, StorageItemType type, String fromKey) {
-        return fileRepository.findByUserIdAndStorageItemTypeAndObjectKeyStartingWith(userId, type, fromKey);
-    }
-
-    public boolean userFileExists(Long userId, String toKey) {
-        return fileRepository.existsByUserIdAndObjectKey(userId, toKey);
     }
 
 }
