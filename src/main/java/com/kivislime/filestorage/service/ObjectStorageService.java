@@ -120,7 +120,7 @@ public class ObjectStorageService {
                         try {
                             return new DeleteObject(itemResult.get().objectName());
                         } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            throw new ObjectStorageException("Cannot process listed item for deletion, skipping ", e);
                         }
                     })
                     .toList();
