@@ -52,9 +52,4 @@ public class ResourceParserUtil {
     public static boolean isDirectory(String path) {
         return path.endsWith("/");
     }
-
-    public static boolean isFile(String path) {
-        return path.endsWith(".");
-    }
-
 }
