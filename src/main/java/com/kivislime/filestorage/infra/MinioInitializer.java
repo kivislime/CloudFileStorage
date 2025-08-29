@@ -6,9 +6,11 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@ConditionalOnProperty(prefix = "minio.initializer", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Component
 public class MinioInitializer implements CommandLineRunner {
     private final MinioClient minioClient;
@@ -36,7 +38,7 @@ public class MinioInitializer implements CommandLineRunner {
                 log.info("Bucket {} already exists", bucketName);
             }
         } catch (Exception e) {
-            throw new MinioInitializerException("Cannot create bucket ",e);
+            throw new MinioInitializerException("Cannot create bucket ", e);
         }
     }
 }
