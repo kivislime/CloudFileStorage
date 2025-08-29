@@ -62,7 +62,7 @@ public class FileController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"archive.zip\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(file.contentLength())
+                .contentLength(file.length())
                 .body(file.stream());
     }
 
