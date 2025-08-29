@@ -15,19 +15,30 @@ public class ResourceParserUtil {
         return path.substring(index + 1);
     }
 
-    //Using in mapper
-    public static String getParentPathExcludeRootPath(String objectKey) {
+    public static String getParentPathFile(String objectKey) {
         int index = objectKey.lastIndexOf('/');
-
-        if (index == objectKey.indexOf('/')) {
-            return "";
-        }
         return index == -1 ? "" : objectKey.substring(0, index + 1);
     }
 
-    public static String getParentPath(String objectKey) {
+    public static String getParentPathResource(String objectKey) {
         int index = objectKey.lastIndexOf('/');
-        return index == -1 ? "" : objectKey.substring(0, index + 1);
+
+        if (index == objectKey.length() - 1) {
+            index = objectKey.lastIndexOf('/', index - 1);
+        }
+        if (index == -1) {
+            return "";
+        }
+
+        return objectKey.substring(0, index + 1);
+    }
+
+    //Using in mapper
+    public static String getParentPathExcludeRootPath(String objectKey) {
+        if (objectKey.lastIndexOf('/') == objectKey.indexOf('/') && isDirectory(objectKey)) {
+            return "";
+        }
+        return getParentPathResource(objectKey);
     }
 
     public static String getExtension(String path) {
