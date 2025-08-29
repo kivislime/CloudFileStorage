@@ -1,6 +1,5 @@
 package com.kivislime.filestorage.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record UserCredentialsRequest(

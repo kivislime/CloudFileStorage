@@ -1,16 +1,10 @@
 package com.kivislime.filestorage.infra.validators;
 
-import com.kivislime.filestorage.exception.DetectMimeTypeException;
 import com.kivislime.filestorage.exception.InvalidFileExtensionException;
-import com.kivislime.filestorage.exception.InvalidMimeTypeException;
 import com.kivislime.filestorage.infra.ObjectStorageProperties;
 import com.kivislime.filestorage.util.ResourceParserUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 
 @RequiredArgsConstructor
 @Component

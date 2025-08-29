@@ -1,15 +1,15 @@
 package com.kivislime.filestorage.controller;
 
 import com.kivislime.filestorage.dto.AuthResponse;
-import com.kivislime.filestorage.service.AuthService;
 import com.kivislime.filestorage.dto.UserCredentialsRequest;
+import com.kivislime.filestorage.service.AuthService;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
