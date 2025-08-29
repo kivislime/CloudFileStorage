@@ -46,7 +46,7 @@ public class FileService {
 
     public List<FileInfoResponse> uploadResource(Long userId, String path, FileUploadCommand request) {
         String fullPath = path + request.ordinalName();
-        String pathToCreate = path + ResourceParserUtil.getParentPath(request.ordinalName());
+        String pathToCreate = path + ResourceParserUtil.getParentPathFile(request.ordinalName());
         log.info("User tried to upload resource for path=" + fullPath + ", userId=" + userId);
 
         UserFile newFile = fileRepository.saveFile(
@@ -78,12 +78,18 @@ public class FileService {
         if (fromKey.equals(toKey)) {
             throw new InvalidResourceMoveException("User " + userId + " tried to move/rename resource from " + fromKey + " to itself");
         }
+        String nameFrom = ResourceParserUtil.getNameFromPath(fromKey);
+        String nameTo = ResourceParserUtil.getNameFromPath(toKey);
 
-        if (ResourceParserUtil.isDirectory(fromKey) && ResourceParserUtil.isDirectory(toKey)) {
+        String parenPathFrom = ResourceParserUtil.getParentPathResource(fromKey);
+        String parenPathTo = ResourceParserUtil.getParentPathResource(toKey);
+
+        if (!fromKey.contains("/") || nameFrom.equals(nameTo) ||
+                ResourceParserUtil.isDirectory(fromKey) && ResourceParserUtil.isDirectory(toKey)) {
             log.info("User tried to move resource from " + fromKey + " to " + toKey + ", userId=" + userId);
             return move(userId, fromKey, toKey);
-        } else if (ResourceParserUtil.getNameFromPath(fromKey).equals(ResourceParserUtil.getNameFromPath(toKey))) {
-            log.info("User tried to rename resource from " + fromKey + "to " + toKey + ", userId=" + userId);
+        } else if (parenPathFrom.equals(parenPathTo)) {
+            log.info("User tried to rename resource from " + fromKey + " to " + toKey + ", userId=" + userId);
             return rename(userId, fromKey, toKey);
         } else {
             throw new InvalidResourceMoveException("User " + userId +
