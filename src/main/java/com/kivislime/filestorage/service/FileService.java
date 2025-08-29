@@ -84,6 +84,7 @@ public class FileService {
         String parenPathFrom = ResourceParserUtil.getParentPathResource(fromKey);
         String parenPathTo = ResourceParserUtil.getParentPathResource(toKey);
 
+        //Rename directories equals move directories
         if (!fromKey.contains("/") || nameFrom.equals(nameTo) ||
                 ResourceParserUtil.isDirectory(fromKey) && ResourceParserUtil.isDirectory(toKey)) {
             log.info("User tried to move resource from " + fromKey + " to " + toKey + ", userId=" + userId);
@@ -216,9 +217,7 @@ public class FileService {
             tryDeleteFiles(userId, Map.of(fromKey, toKey));
         }
 
-        List<FileInfoResponse> list = directoryService.createMissingDirectoriesForPath(toKey, userId);
-        list.add(fileInfoMapper.toDto(file));
-        return list;
+        return fileInfoMapper.toDtoList(List.of(file));
     }
 
 }
