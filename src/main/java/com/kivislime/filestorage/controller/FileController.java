@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.function.Supplier;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/resource")
@@ -49,7 +48,6 @@ public class FileController {
     public ResponseEntity<List<FileInfoResponse>> moveFile(@RequestParam @ValidResourcePath String from,
                                                            @RequestParam @ValidResourcePath String to,
                                                            @AuthenticationPrincipal UserPrincipal principal) {
-        log.info("Move from: {} to: {}", from, to);
         List<FileInfoResponse> fileList = fileService.moveResource(principal.getId(), from, to);
         return ResponseEntity.ok(fileList);
     }
