@@ -111,6 +111,12 @@ public class FileService {
             throw new FileNotFoundException("No files found for userId=" + userId + ", path=" + path);
         }
 
+        if (userFiles.size() == 1 && userFiles.get(0).getObjectKey().equals(path)) {
+            UserFile file = userFiles.get(0);
+            InputStream stream = objectStorageService.download(userId, file.getObjectKey());
+            return new FileDownloadResult(new InputStreamResource(stream), file.getSize());
+        }
+
         Map<String, Supplier<InputStream>> suppliers = userFiles.stream()
                 .filter(f -> f.getStorageItemType() == StorageItemType.FILE)
                 .collect(Collectors.toMap(

@@ -6,6 +6,7 @@ import com.kivislime.filestorage.dto.FileUploadCommand;
 import com.kivislime.filestorage.exception.FileUploadException;
 import com.kivislime.filestorage.security.UserPrincipal;
 import com.kivislime.filestorage.service.FileService;
+import com.kivislime.filestorage.util.ResourceParserUtil;
 import com.kivislime.filestorage.validation.ValidDirectoryPath;
 import com.kivislime.filestorage.validation.ValidResourcePath;
 import lombok.RequiredArgsConstructor;
@@ -53,16 +54,19 @@ public class FileController {
     }
 
     @GetMapping("download")
-    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam @ValidResourcePath String path,
+    public ResponseEntity<InputStreamResource> downloadFile(@RequestParam String path,
                                                             @AuthenticationPrincipal UserPrincipal principal) {
-
         FileDownloadResult file = fileService.downloadResource(principal.getId(), path);
+
+        String filename = path.endsWith("/") ? "archive.zip" : ResourceParserUtil.getNameFromPath(path);
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"archive.zip\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .contentLength(file.length())
                 .body(file.stream());
     }
+
 
     @PostMapping
     public ResponseEntity<List<FileInfoResponse>> uploadFile(@RequestParam @ValidDirectoryPath String path,
