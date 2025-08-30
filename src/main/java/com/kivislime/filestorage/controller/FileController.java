@@ -38,7 +38,7 @@ public class FileController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<FileInfoResponse>> searchFiles(@RequestParam @ValidDirectoryPath String path,
+    public ResponseEntity<List<FileInfoResponse>> searchFiles(@RequestParam("query") @ValidDirectoryPath String path,
                                                               @AuthenticationPrincipal UserPrincipal principal) {
         List<FileInfoResponse> fileList = fileService.listResourcesRecursive(principal.getId(), path);
         return ResponseEntity.ok(fileList);
